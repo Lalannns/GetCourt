@@ -212,7 +212,13 @@ public struct ProfileHubView: View {
             VStack(spacing: 8) {
                 managementRow(icon: "tennis.racket", title: store.localization.localized("personal_data"), subtitle: store.localization.localized("personal_data_sub"), badge: nil, isDark: isDark)
                 managementRow(icon: "ticket.fill", title: store.localization.localized("my_bookings"), subtitle: store.localization.localized("my_bookings_sub"), badge: "2", isDark: isDark)
-                managementRow(icon: "chart.line.uptrend.xyaxis", title: store.localization.localized("match_history"), subtitle: store.localization.localized("match_history_sub"), badge: nil, isDark: isDark)
+                
+                // 👉 Navigation Link to MatchHistoryView
+                NavigationLink(destination: MatchHistoryView(store: store)) {
+                    managementRowContent(icon: "chart.line.uptrend.xyaxis", title: store.localization.localized("match_history"), subtitle: store.localization.localized("match_history_sub"), badge: nil, isDark: isDark)
+                }
+                .buttonStyle(.plain)
+                
                 managementRow(icon: "heart.fill", title: store.localization.localized("favorite_courts"), subtitle: store.localization.localized("favorite_courts_sub"), badge: nil, isDark: isDark)
                 managementRow(icon: "antenna.radiowaves.left.and.right", title: store.localization.localized("radar_challenges"), subtitle: store.localization.localized("radar_challenges_sub"), badge: "•", isDark: isDark)
                 managementRow(icon: "headphones", title: store.localization.localized("support_247"), subtitle: store.localization.localized("support_sub"), badge: nil, isDark: isDark)
@@ -305,47 +311,52 @@ public struct ProfileHubView: View {
         .overlay(RoundedRectangle(cornerRadius: 12).stroke(AppTheme.border(for: isDark), lineWidth: 1))
     }
     
-    private func managementRow(icon: String, title: String, subtitle: String, badge: String?, isDark: Bool) -> some View {
-        Button(action: { Haptics.play(.light) }) {
-            HStack(spacing: 12) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(AppTheme.darkCard(for: isDark))
-                        .frame(width: 40, height: 40)
-                    Image(systemName: icon)
-                        .foregroundColor(AppTheme.neonAccent)
-                        .font(.system(size: 16))
-                }
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(AppTheme.textPrimary(for: isDark))
-                    Text(subtitle)
-                        .font(.system(size: 11))
-                        .foregroundColor(AppTheme.textSecondary(for: isDark))
-                }
-                
-                Spacer()
-                
-                if let badge {
-                    Text(badge)
-                        .font(.system(size: 11, weight: .bold))
-                        .foregroundColor(badge == "•" ? AppTheme.neonAccent : Color(hex: "0A0A0C"))
-                        .padding(.horizontal, badge == "•" ? 6 : 8)
-                        .padding(.vertical, badge == "•" ? 2 : 4)
-                        .background(badge == "•" ? AppTheme.neonAccent.opacity(0.2) : AppTheme.neonAccent)
-                        .clipShape(Circle())
-                }
-                
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .bold))
+    @ViewBuilder
+    private func managementRowContent(icon: String, title: String, subtitle: String, badge: String?, isDark: Bool) -> some View {
+        HStack(spacing: 12) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(AppTheme.darkCard(for: isDark))
+                    .frame(width: 40, height: 40)
+                Image(systemName: icon)
+                    .foregroundColor(AppTheme.neonAccent)
+                    .font(.system(size: 16))
+            }
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(AppTheme.textPrimary(for: isDark))
+                Text(subtitle)
+                    .font(.system(size: 11))
                     .foregroundColor(AppTheme.textSecondary(for: isDark))
             }
-            .padding(12)
-            .background(AppTheme.card(for: isDark))
-            .cornerRadius(12)
-            .overlay(RoundedRectangle(cornerRadius: 12).stroke(AppTheme.border(for: isDark), lineWidth: 1))
+            
+            Spacer()
+            
+            if let badge {
+                Text(badge)
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(badge == "•" ? AppTheme.neonAccent : Color(hex: "0A0A0C"))
+                    .padding(.horizontal, badge == "•" ? 6 : 8)
+                    .padding(.vertical, badge == "•" ? 2 : 4)
+                    .background(badge == "•" ? AppTheme.neonAccent.opacity(0.2) : AppTheme.neonAccent)
+                    .clipShape(Circle())
+            }
+            
+            Image(systemName: "chevron.right")
+                .font(.system(size: 12, weight: .bold))
+                .foregroundColor(AppTheme.textSecondary(for: isDark))
+        }
+        .padding(12)
+        .background(AppTheme.card(for: isDark))
+        .cornerRadius(12)
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(AppTheme.border(for: isDark), lineWidth: 1))
+    }
+    
+    private func managementRow(icon: String, title: String, subtitle: String, badge: String?, isDark: Bool) -> some View {
+        Button(action: { Haptics.play(.light) }) {
+            managementRowContent(icon: icon, title: title, subtitle: subtitle, badge: badge, isDark: isDark)
         }
     }
     

@@ -35,10 +35,8 @@ public struct HomeDashboardView: View {
             .sheet(item: $selectedCourtForBooking) { court in
                 CourtDetailView(store: store, court: court)
             }
-            .alert(store.localization.localized("qr_alert_title"), isPresented: $showQRModal) {
-                Button("OK", role: .cancel) {}
-            } message: {
-                Text(store.localization.localized("qr_alert_msg"))
+            .sheet(isPresented: $showQRModal) {
+                QrPassModalView(store: store)
             }
         }
     }
@@ -467,5 +465,85 @@ public struct HomeDashboardView: View {
             .cornerRadius(AppTheme.standardCornerRadius)
             .overlay(RoundedRectangle(cornerRadius: AppTheme.standardCornerRadius).stroke(AppTheme.graphiteBorder, lineWidth: 1))
         }
+    }
+}
+
+// MARK: - QR Pass Sheet Component (Outside HomeDashboardView)
+struct QrPassModalView: View {
+    @Bindable var store: AppStorageStore
+    @Environment(\.dismiss) var dismiss
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Capsule()
+                .fill(AppTheme.graphiteBorder)
+                .frame(width: 36, height: 4)
+                .padding(.top, 8)
+            
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("QR PASS")
+                        .font(.system(size: 10, weight: .bold))
+                        .tracking(1.5)
+                        .foregroundColor(AppTheme.neonAccent)
+                    Text("Almaty Tennis Club")
+                        .font(.system(size: 20, weight: .black))
+                        .foregroundColor(AppTheme.textPrimary)
+                }
+                Spacer()
+                
+                Button(action: { dismiss() }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 22))
+                        .foregroundColor(AppTheme.textSecondary)
+                }
+            }
+            .padding(.horizontal, 4)
+            
+            ZStack {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(AppTheme.graphiteDark)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(AppTheme.graphiteBorder, lineWidth: 1)
+                    )
+                
+                // Name of image asset added to Assets.xcassets
+                Image("club_qr_pass")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 200, height: 200)
+                    .cornerRadius(8)
+                    .padding(24)
+            }
+            .frame(height: 250)
+            
+            VStack(spacing: 6) {
+                Text("Court #3 • Hard Acrylic")
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundColor(AppTheme.textPrimary)
+                Text("Present this code at the turnstile scanner.")
+                    .font(.system(size: 11))
+                    .foregroundColor(AppTheme.textSecondary)
+            }
+            
+            Button(action: {
+                Haptics.play(.medium)
+                dismiss()
+            }) {
+                Text("Close Pass")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(AppTheme.graphiteBlack)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .background(AppTheme.neonAccent)
+                    .cornerRadius(12)
+            }
+            .padding(.top, 8)
+        }
+        .padding(20)
+        .background(AppTheme.graphiteCard)
+        .presentationDetents([.fraction(0.6)])
+        .presentationDragIndicator(.hidden)
     }
 }
