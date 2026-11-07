@@ -210,18 +210,61 @@ public struct ProfileHubView: View {
                 .foregroundColor(AppTheme.textSecondary(for: isDark))
             
             VStack(spacing: 8) {
-                managementRow(icon: "tennis.racket", title: store.localization.localized("personal_data"), subtitle: store.localization.localized("personal_data_sub"), badge: nil, isDark: isDark)
-                managementRow(icon: "ticket.fill", title: store.localization.localized("my_bookings"), subtitle: store.localization.localized("my_bookings_sub"), badge: "2", isDark: isDark)
+                managementRow(
+                    icon: "tennis.racket",
+                    title: store.localization.localized("personal_data"),
+                    subtitle: store.localization.localized("personal_data_sub"),
+                    badge: nil,
+                    isDark: isDark
+                )
                 
-                // 👉 Navigation Link to MatchHistoryView
+                managementRow(
+                    icon: "ticket.fill",
+                    title: store.localization.localized("my_bookings"),
+                    subtitle: store.localization.localized("my_bookings_sub"),
+                    badge: "2",
+                    isDark: isDark
+                )
+                
+                // 👉 Match Analytics & History Destination
                 NavigationLink(destination: MatchHistoryView(store: store)) {
-                    managementRowContent(icon: "chart.line.uptrend.xyaxis", title: store.localization.localized("match_history"), subtitle: store.localization.localized("match_history_sub"), badge: nil, isDark: isDark)
+                    managementRowContent(
+                        icon: "chart.line.uptrend.xyaxis",
+                        title: store.localization.localized("match_history"),
+                        subtitle: store.localization.localized("match_history_sub"),
+                        badge: nil,
+                        isDark: isDark
+                    )
                 }
                 .buttonStyle(.plain)
                 
-                managementRow(icon: "heart.fill", title: store.localization.localized("favorite_courts"), subtitle: store.localization.localized("favorite_courts_sub"), badge: nil, isDark: isDark)
-                managementRow(icon: "antenna.radiowaves.left.and.right", title: store.localization.localized("radar_challenges"), subtitle: store.localization.localized("radar_challenges_sub"), badge: "•", isDark: isDark)
-                managementRow(icon: "headphones", title: store.localization.localized("support_247"), subtitle: store.localization.localized("support_sub"), badge: nil, isDark: isDark)
+                // 👉 Favorite Courts Destination
+                NavigationLink(destination: FavoriteCourtsView(store: store)) {
+                    managementRowContent(
+                        icon: "heart.fill",
+                        title: store.localization.localized("favorite_courts"),
+                        subtitle: store.localization.localized("favorite_courts_sub"),
+                        badge: nil,
+                        isDark: isDark
+                    )
+                }
+                .buttonStyle(.plain)
+                
+                managementRow(
+                    icon: "antenna.radiowaves.left.and.right",
+                    title: store.localization.localized("radar_challenges"),
+                    subtitle: store.localization.localized("radar_challenges_sub"),
+                    badge: "•",
+                    isDark: isDark
+                )
+                
+                managementRow(
+                    icon: "headphones",
+                    title: store.localization.localized("support_247"),
+                    subtitle: store.localization.localized("support_sub"),
+                    badge: nil,
+                    isDark: isDark
+                )
             }
         }
     }

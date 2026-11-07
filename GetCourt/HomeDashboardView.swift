@@ -12,6 +12,7 @@ public struct HomeDashboardView: View {
     @Binding var selectedTab: TabItem
     @State private var selectedCourtForBooking: Court? = nil
     @State private var showQRModal: Bool = false
+    @State private var navigateToTournaments: Bool = false
     
     public var body: some View {
         NavigationStack {
@@ -31,6 +32,9 @@ public struct HomeDashboardView: View {
                     .padding(20)
                     .padding(.bottom, 90)
                 }
+            }
+            .navigationDestination(isPresented: $navigateToTournaments) {
+                TournamentsView(store: store)
             }
             .sheet(item: $selectedCourtForBooking) { court in
                 CourtDetailView(store: store, court: court)
@@ -219,6 +223,7 @@ public struct HomeDashboardView: View {
             }
             quickActionButton(title: store.localization.localized("tournaments"), subtitle: store.localization.localized("tournaments_sub"), icon: "trophy.fill") {
                 Haptics.selection()
+                navigateToTournaments = true
             }
             quickActionButton(title: store.localization.localized("coaches"), subtitle: store.localization.localized("coaches_sub"), icon: "figure.walk.motion") {
                 Haptics.selection()
@@ -228,46 +233,52 @@ public struct HomeDashboardView: View {
     
     @ViewBuilder
     private var tournamentBanner: some View {
-        ZStack(alignment: .bottomLeading) {
-            RoundedRectangle(cornerRadius: AppTheme.standardCornerRadius)
-                .fill(AppTheme.graphiteCard)
-                .frame(height: 140)
-                .overlay(
-                    LinearGradient(colors: [.clear, AppTheme.graphiteBlack.opacity(0.8)], startPoint: .top, endPoint: .bottom)
-                        .cornerRadius(AppTheme.standardCornerRadius)
-                )
-                .overlay(RoundedRectangle(cornerRadius: AppTheme.standardCornerRadius).stroke(AppTheme.graphiteBorder, lineWidth: 1))
-            
-            VStack(alignment: .leading, spacing: 6) {
-                Text(store.localization.localized("registration"))
-                    .font(.system(size: 9, weight: .black))
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(AppTheme.neonAccent)
-                    .foregroundColor(AppTheme.graphiteBlack)
-                    .cornerRadius(4)
+        Button(action: {
+            Haptics.selection()
+            navigateToTournaments = true
+        }) {
+            ZStack(alignment: .bottomLeading) {
+                RoundedRectangle(cornerRadius: AppTheme.standardCornerRadius)
+                    .fill(AppTheme.graphiteCard)
+                    .frame(height: 140)
+                    .overlay(
+                        LinearGradient(colors: [.clear, AppTheme.graphiteBlack.opacity(0.8)], startPoint: .top, endPoint: .bottom)
+                            .cornerRadius(AppTheme.standardCornerRadius)
+                    )
+                    .overlay(RoundedRectangle(cornerRadius: AppTheme.standardCornerRadius).stroke(AppTheme.graphiteBorder, lineWidth: 1))
                 
-                Text(store.localization.localized("tournament_name"))
-                    .font(.system(size: 18, weight: .black))
-                    .foregroundColor(AppTheme.textPrimary)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(store.localization.localized("registration"))
+                        .font(.system(size: 9, weight: .black))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(AppTheme.neonAccent)
+                        .foregroundColor(AppTheme.graphiteBlack)
+                        .cornerRadius(4)
+                    
+                    Text(store.localization.localized("tournament_name"))
+                        .font(.system(size: 18, weight: .black))
+                        .foregroundColor(AppTheme.textPrimary)
+                    
+                    Text(store.localization.localized("tournament_desc"))
+                        .font(.system(size: 11))
+                        .foregroundColor(AppTheme.textSecondary)
+                }
+                .padding(16)
                 
-                Text(store.localization.localized("tournament_desc"))
-                    .font(.system(size: 11))
-                    .foregroundColor(AppTheme.textSecondary)
-            }
-            .padding(16)
-            
-            VStack {
-                Spacer()
-                HStack {
+                VStack {
                     Spacer()
-                    Text("1,500,000₸")
-                        .font(.system(size: 13, weight: .black))
-                        .foregroundColor(AppTheme.neonAccent)
-                        .padding(10)
+                    HStack {
+                        Spacer()
+                        Text("1,500,000₸")
+                            .font(.system(size: 13, weight: .black))
+                            .foregroundColor(AppTheme.neonAccent)
+                            .padding(10)
+                    }
                 }
             }
         }
+        .buttonStyle(.plain)
     }
     
     @ViewBuilder
@@ -508,7 +519,6 @@ struct QrPassModalView: View {
                             .stroke(AppTheme.graphiteBorder, lineWidth: 1)
                     )
                 
-                // Name of image asset added to Assets.xcassets
                 Image("club_qr_pass")
                     .resizable()
                     .scaledToFit()

@@ -26,7 +26,21 @@ public final class AppStorageStore {
         }
     }
     
-    public init() {}
+    // Reactive Stored Property for Favorites backed by UserDefaults
+    public var favoriteCourtIds: Set<String> = [] {
+        didSet {
+            if let encoded = try? JSONEncoder().encode(favoriteCourtIds) {
+                UserDefaults.standard.set(encoded, forKey: "favoriteCourtIds")
+            }
+        }
+    }
+    
+    public init() {
+        if let data = UserDefaults.standard.data(forKey: "favoriteCourtIds"),
+           let decoded = try? JSONDecoder().decode(Set<String>.self, from: data) {
+            self.favoriteCourtIds = decoded
+        }
+    }
     
     public func transition(to state: AppState) {
         withAnimation(.easeInOut(duration: 0.4)) {
@@ -48,5 +62,17 @@ public final class AppStorageStore {
             isAuthenticated = false
             currentState = .unauthenticated
         }
+    }
+
+    public func toggleFavorite(for courtId: String) {
+        if favoriteCourtIds.contains(courtId) {
+            favoriteCourtIds.remove(courtId)
+        } else {
+            favoriteCourtIds.insert(courtId)
+        }
+    }
+
+    public func isFavorite(courtId: String) -> Bool {
+        return favoriteCourtIds.contains(courtId)
     }
 }

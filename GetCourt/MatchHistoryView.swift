@@ -13,12 +13,17 @@ public struct MatchHistoryView: View {
     @State private var selectedFilter: MatchFilter = .all
     @State private var showRecordScoreSheet: Bool = false
     
-    enum MatchFilter: String, CaseIterable, Identifiable {
-        case all = "Все матчи (38)"
-        case wins = "Жеңістер / Победы (28)"
-        case losses = "Поражения (10)"
+    enum MatchFilter: CaseIterable, Identifiable {
+        case all, wins, losses
+        var id: Self { self }
         
-        var id: String { rawValue }
+        func title(using localization: LocalizationService) -> String {
+            switch self {
+            case .all: return localization.localized("filter_all_matches")
+            case .wins: return localization.localized("filter_wins")
+            case .losses: return localization.localized("filter_losses")
+            }
+        }
     }
     
     public var body: some View {
@@ -64,16 +69,14 @@ public struct MatchHistoryView: View {
                 
                 Spacer()
                 
-                HStack(spacing: 6) {
-                    Text("NTRP 4.5 • СЕЗОН 2025")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundColor(AppTheme.neonAccent)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
-                        .background(AppTheme.darkCard(for: isDark))
-                        .cornerRadius(20)
-                        .overlay(Capsule().stroke(AppTheme.neonAccent.opacity(0.4), lineWidth: 1))
-                }
+                Text(store.localization.localized("season_badge"))
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundColor(AppTheme.neonAccent)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(AppTheme.darkCard(for: isDark))
+                    .cornerRadius(20)
+                    .overlay(Capsule().stroke(AppTheme.neonAccent.opacity(0.4), lineWidth: 1))
                 
                 Spacer()
                 
@@ -81,7 +84,7 @@ public struct MatchHistoryView: View {
                     HStack(spacing: 4) {
                         Image(systemName: "square.and.arrow.up")
                             .font(.system(size: 12, weight: .bold))
-                        Text("Экспорт / PDF")
+                        Text(store.localization.localized("export_pdf"))
                             .font(.system(size: 11, weight: .bold))
                     }
                     .foregroundColor(AppTheme.textPrimary(for: isDark))
@@ -94,24 +97,22 @@ public struct MatchHistoryView: View {
             }
             
             VStack(alignment: .leading, spacing: 2) {
-                Text("История матчей")
+                Text(store.localization.localized("match_history_title"))
                     .font(.system(size: 26, weight: .black))
                     .foregroundColor(AppTheme.textPrimary(for: isDark))
                 
-                Text("Ойындар тарихы  •  Match Analytics & History")
+                Text(store.localization.localized("match_history_subtitle"))
                     .font(.system(size: 12, weight: .medium))
                     .foregroundColor(AppTheme.textSecondary(for: isDark))
             }
         }
     }
     
-    // MARK: - Analytics Analytics Overview Card
+    // MARK: - Analytics Overview Card
     @ViewBuilder
     private func analyticsOverviewCard(isDark: Bool) -> some View {
         VStack(spacing: 16) {
-            // Upper Row: Winrate + Ratio + Sparkline
             HStack(spacing: 16) {
-                // Circular Winrate Progress
                 ZStack {
                     Circle()
                         .stroke(AppTheme.darkCard(for: isDark), lineWidth: 8)
@@ -127,7 +128,7 @@ public struct MatchHistoryView: View {
                         Text("74%")
                             .font(.system(size: 18, weight: .black))
                             .foregroundColor(AppTheme.textPrimary(for: isDark))
-                        Text("WIN RATE")
+                        Text(store.localization.localized("win_rate"))
                             .font(.system(size: 7, weight: .bold))
                             .foregroundColor(AppTheme.textSecondary(for: isDark))
                     }
@@ -141,13 +142,13 @@ public struct MatchHistoryView: View {
                         Text("10L")
                             .font(.system(size: 16, weight: .bold))
                             .foregroundColor(AppTheme.textSecondary(for: isDark))
-                        Text("/ 38 игр")
+                        Text("/ 38 \(store.localization.localized("games_played"))")
                             .font(.system(size: 11, weight: .medium))
                             .foregroundColor(AppTheme.textSecondary(for: isDark))
                     }
                     
                     HStack(spacing: 4) {
-                        Text("🔥 4 победы подряд")
+                        Text("🔥 4 \(store.localization.localized("winning_streak"))")
                             .font(.system(size: 10, weight: .bold))
                             .foregroundColor(AppTheme.textPrimary(for: isDark))
                     }
@@ -159,7 +160,6 @@ public struct MatchHistoryView: View {
                 
                 Spacer()
                 
-                // Sparkline Chart & Delta
                 VStack(alignment: .trailing, spacing: 4) {
                     HStack(spacing: 2) {
                         Image(systemName: "line.diagonal.arrow.up.right")
@@ -173,34 +173,22 @@ public struct MatchHistoryView: View {
                     .background(AppTheme.neonAccent.opacity(0.15))
                     .cornerRadius(6)
                     
-                    Text("NTRP дельта (30д)")
+                    Text(store.localization.localized("ntrp_delta"))
                         .font(.system(size: 8, weight: .medium))
                         .foregroundColor(AppTheme.textSecondary(for: isDark))
-                    
-                    // Simple Sparkline vector
-                    Path { path in
-                        path.move(to: CGPoint(x: 0, y: 15))
-                        path.addLine(to: CGPoint(x: 15, y: 12))
-                        path.addLine(to: CGPoint(x: 30, y: 18))
-                        path.addLine(to: CGPoint(x: 45, y: 8))
-                        path.addLine(to: CGPoint(x: 60, y: 2))
-                    }
-                    .stroke(AppTheme.neonAccent, lineWidth: 2)
-                    .frame(width: 60, height: 20)
                 }
             }
             
             Divider().background(AppTheme.border(for: isDark))
             
-            // Lower Row: Surface Breakdown
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text("ПОКРЫТИЯ КОРТА • КОРТ ТҮРІ")
+                    Text(store.localization.localized("surface_breakdown"))
                         .font(.system(size: 9, weight: .bold))
                         .tracking(1)
                         .foregroundColor(AppTheme.textSecondary(for: isDark))
                     Spacer()
-                    Text("Талдау")
+                    Text(store.localization.localized("analysis"))
                         .font(.system(size: 10, weight: .bold))
                         .foregroundColor(AppTheme.neonAccent)
                 }
@@ -252,7 +240,7 @@ public struct MatchHistoryView: View {
                             selectedFilter = filter
                         }
                     }) {
-                        Text(filter.rawValue)
+                        Text(filter.title(using: store.localization))
                             .font(.system(size: 12, weight: .bold))
                             .foregroundColor(isSelected ? Color(hex: "0A0A0C") : AppTheme.textPrimary(for: isDark))
                             .padding(.horizontal, 14)
@@ -270,70 +258,74 @@ public struct MatchHistoryView: View {
     @ViewBuilder
     private func matchCardsList(isDark: Bool) -> some View {
         VStack(spacing: 14) {
-            // Match 1: Win 1v1 Sparring
-            sparringMatchCard(
-                isWin: true,
-                badgeText: "WIN • ЖЕҢІС",
-                typeText: "Спарринг 1v1",
-                duration: "1ч 45мин",
-                courtName: "Almaty Tennis Club (Корт #3, Hard)",
-                dateText: "Вчера, 19:30",
-                p1Name: "Aliya Nurlan", p1Level: "4.5 (ВЫ)", p1Scores: ["6", "7"],
-                p2Name: "Daniyar Kasymov", p2Level: "4.5", p2Scores: ["4", "5"],
-                statsNote: "Эйсы: 6 • Брейк-поинты: 4/5",
-                isDark: isDark
-            )
+            if selectedFilter == .all || selectedFilter == .wins {
+                // Match 1: Win 1v1 Sparring
+                sparringMatchCard(
+                    badgeText: "WIN",
+                    typeText: store.localization.localized("sparring_1v1"),
+                    duration: "1h 45m",
+                    courtName: "Almaty Tennis Club (Court #3, Hard)",
+                    dateText: "Yesterday, 19:30",
+                    p1Name: "Aliya Nurlan", p1Level: "4.5", p1Scores: ["6", "7"],
+                    p2Name: "Daniyar Kasymov", p2Level: "4.5", p2Scores: ["4", "5"],
+                    statsNote: store.localization.localized("aces_breakpoints"),
+                    isDark: isDark
+                )
+                
+                // Match 2: Tournament Win
+                tournamentMatchCard(
+                    tournamentTag: "ÖZINŞE CUP • 1/4 FINALS",
+                    pointsEarned: "+45 pts",
+                    courtName: "Gorky Tennis Park (Clay)",
+                    dateText: "Oct 20, 11:00",
+                    p1Name: "Aliya N.", p1Level: "4.5", p1Scores: ["4", "6", "10"],
+                    p2Name: "Madina I.", p2Level: "4.0", p2Scores: ["6", "3", "8"],
+                    duration: "2h 10m",
+                    fairPlayBadge: "★ 5.0 Fair Play",
+                    isDark: isDark
+                )
+            }
             
-            // Match 2: Tournament Win
-            tournamentMatchCard(
-                tournamentTag: "ÖZINŞE CUP • 1/4 ФИНАЛА",
-                pointsEarned: "+45 pts",
-                courtName: "Gorky Tennis Park (Clay • Топырақ)",
-                dateText: "20 Қазан, 11:00",
-                p1Name: "Aliya N.", p1Level: "4.5", p1Scores: ["4", "6", "10"],
-                p2Name: "Мадина И.", p2Level: "4.0", p2Scores: ["6", "3", "8"],
-                duration: "2ч 10мин",
-                fairPlayBadge: "★ 5.0 Fair Play",
-                isDark: isDark
-            )
+            if selectedFilter == .all || selectedFilter == .losses {
+                // Match 3: Loss Sparring
+                sparringLossCard(
+                    badgeText: "LOSS",
+                    typeText: store.localization.localized("sparring_1v1"),
+                    duration: "1h 35m",
+                    courtName: "National Tennis Center (Indoor Hard)",
+                    dateText: "Oct 16",
+                    p1Name: "Aliya N.", p1Level: "4.5", p1Scores: [("6", "5"), ("4", nil)],
+                    p2Name: "Arman Serikov", p2Level: "4.8", p2Scores: [("7", "7"), ("6", nil)],
+                    note: "Tiebreak Set 1 • Radar 50/50",
+                    isDark: isDark
+                )
+            }
             
-            // Match 3: Loss Sparring
-            sparringLossCard(
-                badgeText: "LOSS • ЖЕҢІЛІС",
-                typeText: "Спарринг 1v1",
-                duration: "1ч 35мин",
-                courtName: "National Tennis Center (Indoor Hard)",
-                dateText: "16 Қазан",
-                p1Name: "Aliya N.", p1Level: "4.5", p1Scores: [("6", "5"), ("4", nil)],
-                p2Name: "Арман Сериков", p2Level: "4.8", p2Scores: [("7", "7"), ("6", nil)],
-                note: "Тай-брейк 1-сет • Спарринг-радар 50/50",
-                isDark: isDark
-            )
-            
-            // Match 4: Doubles 2x2 Win
-            doublesMatchCard(
-                tagText: "DOUBLES 2X2",
-                duration: "1ч 20мин",
-                courtName: "Daulet Tennis Center (Hard)",
-                dateText: "12 Қазан",
-                pair1Name: "Aliya N. & Ерлан С.", pair1Scores: ["6", "6"],
-                pair2Name: "Тимур К. & Санжар Б.", pair2Scores: ["2", "4"],
-                footerNote: "Парная игра 2v2 • Сыгранный дуэт",
-                isDark: isDark
-            )
+            if selectedFilter == .all || selectedFilter == .wins {
+                // Match 4: Doubles 2x2 Win
+                doublesMatchCard(
+                    tagText: store.localization.localized("doubles_tag"),
+                    duration: "1h 20m",
+                    courtName: "Daulet Tennis Center (Hard)",
+                    dateText: "Oct 12",
+                    pair1Name: "Aliya N. & Yerlan S.", pair1Scores: ["6", "6"],
+                    pair2Name: "Timur K. & Sanzhar B.", pair2Scores: ["2", "4"],
+                    footerNote: "2v2 Match • Synced Duo",
+                    isDark: isDark
+                )
+            }
         }
     }
     
-    // MARK: - Match Card Components
+    // MARK: - Match Card Helpers
     private func sparringMatchCard(
-        isWin: Bool, badgeText: String, typeText: String, duration: String,
+        badgeText: String, typeText: String, duration: String,
         courtName: String, dateText: String,
         p1Name: String, p1Level: String, p1Scores: [String],
         p2Name: String, p2Level: String, p2Scores: [String],
         statsNote: String, isDark: Bool
     ) -> some View {
         VStack(spacing: 12) {
-            // Header Row
             HStack {
                 Text(badgeText)
                     .font(.system(size: 10, weight: .black))
@@ -358,7 +350,6 @@ public struct MatchHistoryView: View {
                 .foregroundColor(AppTheme.textSecondary(for: isDark))
             }
             
-            // Court venue
             HStack(spacing: 4) {
                 Image(systemName: "mappin.and.ellipse")
                     .font(.system(size: 10))
@@ -372,7 +363,6 @@ public struct MatchHistoryView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             
-            // Players Table
             VStack(spacing: 8) {
                 playerScoreRow(name: p1Name, level: p1Level, scores: p1Scores, isWinner: true, isDark: isDark)
                 playerScoreRow(name: p2Name, level: p2Level, scores: p2Scores, isWinner: false, isDark: isDark)
@@ -381,7 +371,6 @@ public struct MatchHistoryView: View {
             .background(AppTheme.darkCard(for: isDark))
             .cornerRadius(12)
             
-            // Footer Action Row
             HStack {
                 HStack(spacing: 4) {
                     Image(systemName: "bolt.fill")
@@ -395,7 +384,7 @@ public struct MatchHistoryView: View {
                 Spacer()
                 
                 HStack(spacing: 6) {
-                    Button("Талдау / Аналитика") {}
+                    Button(store.localization.localized("analytics_btn")) {}
                         .font(.system(size: 10, weight: .bold))
                         .foregroundColor(AppTheme.textPrimary(for: isDark))
                         .padding(.horizontal, 10)
@@ -403,7 +392,7 @@ public struct MatchHistoryView: View {
                         .background(AppTheme.darkCard(for: isDark))
                         .cornerRadius(6)
                     
-                    Button("Реванш") {}
+                    Button(store.localization.localized("rematch_btn")) {}
                         .font(.system(size: 10, weight: .bold))
                         .foregroundColor(AppTheme.textPrimary(for: isDark))
                         .padding(.horizontal, 10)
@@ -492,7 +481,7 @@ public struct MatchHistoryView: View {
                 
                 Spacer()
                 
-                Button("Матч тарихы") {}
+                Button(store.localization.localized("match_protocol")) {}
                     .font(.system(size: 10, weight: .bold))
                     .foregroundColor(AppTheme.textPrimary(for: isDark))
                     .padding(.horizontal, 10)
@@ -563,7 +552,7 @@ public struct MatchHistoryView: View {
                 
                 Spacer()
                 
-                Button("Реванш шақыру") {}
+                Button(store.localization.localized("rematch_btn")) {}
                     .font(.system(size: 10, weight: .bold))
                     .foregroundColor(AppTheme.neonAccent)
                     .padding(.horizontal, 10)
@@ -637,7 +626,7 @@ public struct MatchHistoryView: View {
                 
                 Spacer()
                 
-                Button("Матч хаттамасы") {}
+                Button(store.localization.localized("match_protocol")) {}
                     .font(.system(size: 10, weight: .bold))
                     .foregroundColor(AppTheme.textPrimary(for: isDark))
                     .padding(.horizontal, 10)
@@ -746,7 +735,7 @@ public struct MatchHistoryView: View {
             HStack(spacing: 8) {
                 Image(systemName: "plus.circle.fill")
                     .font(.system(size: 18, weight: .bold))
-                Text("Жаңа матч қосу • Записать счет")
+                Text(store.localization.localized("record_match_btn"))
                     .font(.system(size: 14, weight: .bold))
             }
             .foregroundColor(Color(hex: "0A0A0C"))
